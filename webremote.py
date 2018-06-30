@@ -4,7 +4,11 @@ import re
 from subprocess import check_call, check_output
 
 from bottle import get, post, run, redirect, request
-import RPI:q
+
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(16,GPIO.OUT)
 
 def retrieve_volume():
     output = check_output(['mpc', 'volume'])
@@ -23,12 +27,18 @@ def root():
     return """
     <head>
     <meta name="viewport" content="width=device-width">
-    </head> 
+    </head>
     <html>
         <form method="post" action="/play">
             <input type="submit" value="Play">
         </form>
         <form method="post" action="/stop">
+            <input type="submit" value="Stop">
+        </form>
+        <form method="post" action="/fanon">
+            <input type="submit" value="Stop">
+        </form>
+        <form method="post" action="/fanoff">
             <input type="submit" value="Stop">
         </form>
         <form method="post" action="/volume">
@@ -61,5 +71,14 @@ def set_volume():
     check_call(['mpc', 'volume', volume])
     redirect('/')
 
+@post('/fanon')
+def fan_on():
+    GPIO.output(16.GPIO.LOW)
+    redirect('/')
+
+@post('/fanoff')
+def fan_on():
+    GPIO.output(16.GPIO.LOW)
+    redirect('/')
 
 run(host='::', port=80, debug=True, reloader=True)
